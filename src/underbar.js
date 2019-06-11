@@ -192,6 +192,16 @@
   _.contains = function(collection, target) {
     // TIP: Many iteration problems can be most easily expressed in
     // terms of reduce(). Here's a freebie to demonstrate!
+    if (collection.constructor === {}.constructor){
+      var keys = Object.keys(collection);
+      return _.reduce(keys, function(wasFound, key){
+        if (wasFound){
+          return wasFound;
+        }
+        return collection[key] === target;
+      }, false)
+    }
+
     return _.reduce(collection, function(wasFound, item) {
       if (wasFound) {
         return true;
@@ -204,12 +214,45 @@
   // Determine whether all of the elements match a truth test.
   _.every = function(collection, iterator) {
     // TIP: Try re-using reduce() here.
+    var accumValue
+    if (iterator){
+      accumValue = iterator(collection[0])
+    }
+    if (!collection) { return false; }
+    if (collection.length === 0) { return true; }
+    return _.reduce(collection, function(isTrue, item){
+      if (!isTrue){
+        return false;
+      }
+      if (iterator){
+        return iterator(item) ? true : false;
+      } else {
+        return item;
+      }
+    }, true)
   };
 
   // Determine whether any of the elements pass a truth test. If no iterator is
   // provided, provide a default one
-  _.some = function(collection, iterator) {
+  _.some = function(collection, iterator = _.identity) {
     // TIP: There's a very clever way to re-use every() here.
+    var result = false;
+    for (let i = 0; i < collection.length; i++){
+      if (result) { return true; }
+      result = iterator(collection[i])
+    }
+    return result ? true : false;
+    // if (!collection.length){ return false; }
+    // var someTrue = false
+    // for (var i = 0; i < collection.length; i++){
+    //   if (someTrue){
+    //     return true;
+    //   }
+    //   if (_.every(collection[i], iterator)){
+    //     someTrue = true;
+    //   }
+    // }
+    // return someTrue;
   };
 
 
@@ -232,11 +275,29 @@
   //     bla: "even more stuff"
   //   }); // obj1 now contains key1, key2, key3 and bla
   _.extend = function(obj) {
+    var newObjs = [...arguments];
+    _.each(newObjs, function(objToAdd){
+      var keys = Object.keys(objToAdd);
+      _.each(keys, function(objKey){
+        obj[objKey] = objToAdd[objKey];
+      })
+    })
+    return obj;
   };
 
   // Like extend, but doesn't ever overwrite a key that already
   // exists in obj
   _.defaults = function(obj) {
+    var newObjs = [...arguments];
+    _.each(newObjs, function(objToAdd){
+      var keys = Object.keys(objToAdd);
+      _.each(keys, function(objKey){
+        if (obj[objKey] === undefined){
+          obj[objKey] = objToAdd[objKey];
+        }
+      })
+    })
+    return obj;
   };
 
 
@@ -280,7 +341,20 @@
   // already computed the result for the given argument and return that value
   // instead if possible.
   _.memoize = function(func) {
+    var result;
+    var calledArgs = {};
+    return function(){
+      if (!calledArgs[JSON.stringify(arguments)]){
+        result = func.apply(this, arguments);
+        calledArgs[JSON.stringify(arguments)] = result;
+      } else {
+        result = calledArgs[JSON.stringify(arguments)];
+      }
+      return result;
+    }
   };
+  
+
 
   // Delays a function for the given number of milliseconds, and then calls
   // it with the arguments supplied.
@@ -289,6 +363,11 @@
   // parameter. For example _.delay(someFunction, 500, 'a', 'b') will
   // call someFunction('a', 'b') after 500ms
   _.delay = function(func, wait) {
+    var a = arguments[2];
+    var b = arguments[3];
+    setTimeout(function(){
+      func(a, b);
+    }, wait)
   };
 
 
@@ -303,6 +382,14 @@
   // input array. For a tip on how to make a copy of an array, see:
   // http://mdn.io/Array.prototype.slice
   _.shuffle = function(array) {
+    var duplicateArray = array.slice();
+    var results = [];
+    var index;
+    while(duplicateArray.length){
+      index = Math.floor(Math.random() * duplicateArray.length);
+      results.push(...duplicateArray.splice(index, index + 1));
+    }
+    return results;
   };
 
 
