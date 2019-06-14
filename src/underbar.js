@@ -89,13 +89,26 @@
 
   // Return all elements of an array that don't pass a truth test.
   _.reject = function(collection, test) {
-    var results = [];
-    for (var i = 0; i < collection.length; i++){
-      test(collection[i]) ? null : results.push(collection[i]);
-    }
-    return results;
+    // var results = [];
+    // for (var i = 0; i < collection.length; i++){
+    //   test(collection[i]) ? null : results.push(collection[i]);
+    // }
+    // return results;
 
+    /* *****Alternatively***** */
+    var notWanted = _.filter(collection, function(item){
+      return test(item)
+    })
+    var results = [];
+    _.each(collection, function(item){
+      if (!notWanted.includes(item)){
+        results.push(item);
+      }
+    })
+    return results;
   };
+
+  //NOTE: the above code uses filter to write the reject function, but is not very efficient, still thinking of another way
 
   // Produce a duplicate-free version of the array.
   _.uniq = function(array, isSorted, iterator) {
