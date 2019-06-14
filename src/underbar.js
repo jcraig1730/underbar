@@ -113,6 +113,25 @@
   // Produce a duplicate-free version of the array.
   _.uniq = function(array, isSorted, iterator) {
     var result = [];
+    if (isSorted){
+      _.each(array, function(item, index){
+        if (iterator){
+          console.log(iterator)
+          if (iterator(item) !== iterator(array[index - 1])){
+            result.push(iterator(item));
+          }
+        } else {
+        if (item !== array[index - 1]){
+          result.push(item);
+        }
+      }
+      })
+      console.log(result)
+      return result
+    }
+
+  // the above code was added to use the isSorted variable
+    
     var i;
     var hash = {};
     var temp;
