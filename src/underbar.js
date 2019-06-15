@@ -116,7 +116,6 @@
     if (isSorted){
       _.each(array, function(item, index){
         if (iterator){
-          console.log(iterator)
           if (iterator(item) !== iterator(array[index - 1])){
             result.push(iterator(item));
           }
@@ -126,7 +125,6 @@
         }
       }
       })
-      console.log(result)
       return result
     }
 
@@ -436,6 +434,18 @@
   // Calls the method named by functionOrKey on each value in the list.
   // Note: You will need to learn a bit about .apply to complete this.
   _.invoke = function(collection, functionOrKey, args) {
+    var results = [];
+    if (typeof functionOrKey === 'string'){
+      _.each(collection, function(item){
+        results.push(item[functionOrKey]());
+      })
+      return results;
+    }
+    
+    _.each(collection, function(item){
+      results.push(functionOrKey.call(item))
+    })
+    return results;
   };
 
   // Sort the object's values by a criterion produced by an iterator.
