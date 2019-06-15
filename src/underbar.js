@@ -441,18 +441,27 @@
       })
       return results;
     }
-    
     _.each(collection, function(item){
-      results.push(functionOrKey.call(item))
+      results.push(functionOrKey.call(item));
     })
     return results;
   };
+
 
   // Sort the object's values by a criterion produced by an iterator.
   // If iterator is a string, sort objects by that property with the name
   // of that string. For example, _.sortBy(people, 'name') should sort
   // an array of people by their name.
   _.sortBy = function(collection, iterator) {
+    if (typeof iterator === 'string'){
+      return collection.sort(function(a, b){
+        return a[iterator] < b[iterator] ? -1 : 1;
+      })
+    }
+    return collection.sort(function(a, b){
+      return iterator(a) < iterator(b) ? -1 : 1;
+    })
+    
   };
 
   // Zip together two or more arrays with elements of the same index
